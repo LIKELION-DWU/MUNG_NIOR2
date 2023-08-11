@@ -159,9 +159,9 @@ const LoginQ = () => {
           }
         );
 
-        // 백엔드로부터의 응답 처리
         if (response.status === 200) {
           alert("로그인에 성공했습니다.");
+          localStorage.setItem("loggedInUserNameQ", nameQ);
           gotoMainQ();
         } else {
           alert("로그인에 실패했습니다. 다시 시도해주세요.");

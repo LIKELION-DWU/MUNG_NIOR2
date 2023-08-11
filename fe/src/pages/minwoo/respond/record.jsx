@@ -146,6 +146,7 @@ const NextBtn = styled.img`
 
 const Record = () => {
   const navigate = useNavigate();
+  const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
 
   const GoMy = () => {
     navigate("/RespondMyPage");
@@ -179,7 +180,7 @@ const Record = () => {
 
       <MainContainer>
         <User>
-          <UserName>유새연</UserName>
+          <UserName>{loggedInUserNameR}</UserName>
           <UserText>답변자</UserText>
         </User>
 

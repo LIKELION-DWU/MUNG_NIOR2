@@ -78,6 +78,7 @@ const MainContainer = styled.div`
 `;
 
 const MainUser = () => {
+  const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
   const percentage = 2;
 
   const progressBarStyles = {
@@ -125,7 +126,7 @@ const MainUser = () => {
           width="290px"
         />
       </CircularProgressbarWithChildren>
-      <UserName>유새연</UserName>
+      <UserName>{loggedInUserNameR}</UserName>
       <div
         style={{
           color: "#404040",
@@ -279,7 +280,7 @@ const ResMy = () => {
         <Menu onClick={GoAnswer}>답변하기</Menu>
         <Menu onClick={GoLogout}>로그아웃</Menu>
         <Menu onClick={GoMyPage} className="design">
-          나의 기록
+          답변 기록
         </Menu>
       </MenuContainer>
       <MainContainer>

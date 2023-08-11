@@ -179,6 +179,7 @@ const LoginR = () => {
 
         if (response.status === 200) {
           alert("로그인에 성공했습니다.");
+          localStorage.setItem("loggedInUserNameR", nameR);
           gotoMainR();
         } else {
           alert("로그인에 실패했습니다. 다시 시도해주세요.");

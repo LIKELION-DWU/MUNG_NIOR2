@@ -78,6 +78,7 @@ const MainContainer = styled.div`
 `;
 
 const MainUser = () => {
+  const loggedInUserNameQ = localStorage.getItem("loggedInUserNameQ");
   const percentage = 2;
 
   const progressBarStyles = {
@@ -125,7 +126,7 @@ const MainUser = () => {
           width="290px"
         />
       </CircularProgressbarWithChildren>
-      <UserName>장우림</UserName>
+      <UserName>{loggedInUserNameQ}</UserName>
       <div
         style={{
           color: "#404040",
@@ -233,9 +234,6 @@ const List = () => {
 const QuestMy = () => {
   const navigate = useNavigate();
 
-  const GoAnswer = () => {
-    navigate("/LookAnswer");
-  };
   const GoLogout = () => {
     navigate("/");
   };
@@ -257,10 +255,9 @@ const QuestMy = () => {
       </Logo>
       <MenuContainer>
         <Menu onClick={GoQuestion}>질문하기</Menu>
-        <Menu onClick={GoAnswer}>답변보기</Menu>
         <Menu onClick={GoLogout}>로그아웃</Menu>
         <Menu onClick={GoMyPage} className="mypage">
-          나의 기록
+          질문 기록
         </Menu>
       </MenuContainer>
       <MainContainer>
