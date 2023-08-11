@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -116,73 +117,152 @@ const SendBtn = styled.img`
   margin-left: 800px;
 `;
 
+const P = styled.p`
+  display: inline-block;
+  margin-left: 340px;
+
+  color: #000;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 800;
+`;
+
+const Div1 = styled.div`
+  height: 565px;
+
+  padding-top: 20px;
+  padding-left: 190px;
+`;
+
+const P2 = styled.p`
+  display: inline-block;
+  margin-left: 20px;
+  margin-top: -500px;
+
+  color: #ff6d2e;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 900;
+`;
+
+const Instruction = styled.div`
+  margin-top: 30px;
+
+  color: rgba(0, 0, 0, 0.64);
+  text-align: center;
+  font-family: Tmoney RoundWind;
+  font-size: 60px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: normal;
+`;
+
+const Transcript = styled.p`
+  position: absolute;
+  overflow: hidden;
+
+  text-align: center;
+
+  margin-top: -625px;
+  margin-left: 250px;
+
+  width: 400px;
+  height: 400px;
+
+  color: #000;
+  text-align: center;
+  font-family: Tmoney RoundWind;
+  font-size: 60px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: normal;
+`;
+
 const Dictaphone = () => {
   const navigate = useNavigate();
+  const [userContent, setUserContent] = useState("");
+  //로그인 이름 받기
 
   const GoWaiting = () => {
     navigate("/Waiting");
   };
+  console.log(userContent);
+  const onSendButtonClick = () => {
+    // 사용자 입력을 JSON 객체로 생성합니다.
+    const newQuestion = {
+      content: userContent,
+      writer: "student1",
+    };
 
-  const Div1 = styled.div`
-    height: 565px;
+    // Django API 엔드포인트 주소
+    const apiUrl = "http://127.0.0.1:8000/questions/";
 
-    padding-top: 20px;
-    padding-left: 190px;
-  `;
-  const P = styled.p`
-    display: inline-block;
-    margin-left: 340px;
+    // axios를 사용하여 POST 요청을 보냅니다.
+    axios
+      .post(apiUrl, newQuestion)
+      .then((response) => {
+        // 서버 응답에 대한 처리 (예: 성공 메시지 표시)
+        console.log("요청 성공:", response.data);
+        // GoWaiting(); // 대기 페이지로 이동
+      })
+      .catch((error) => {
+        // 오류 처리
+        console.error("오류 발생:", error);
+      });
+  };
 
-    color: #000;
-    text-align: center;
-    font-family: Pretendard;
-    font-size: 28px;
-    font-style: normal;
-    font-weight: 800;
-  `;
-  const P2 = styled.p`
-    display: inline-block;
-    margin-left: 20px;
-    margin-top: -500px;
+  // const Div1 = styled.div`
+  //   height: 565px;
 
-    color: #ff6d2e;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 900;
-  `;
+  //   padding-top: 20px;
+  //   padding-left: 190px;
+  // `;
 
-  const Instruction = styled.div`
-    margin-top: 30px;
+  // const P2 = styled.p`
+  //   display: inline-block;
+  //   margin-left: 20px;
+  //   margin-top: -500px;
 
-    color: rgba(0, 0, 0, 0.64);
-    text-align: center;
-    font-family: Tmoney RoundWind;
-    font-size: 60px;
-    font-style: normal;
-    font-weight: 800;
-    line-height: normal;
-  `;
+  //   color: #ff6d2e;
+  //   font-size: 30px;
+  //   font-style: normal;
+  //   font-weight: 900;
+  // `;
 
-  const Transcript = styled.p`
-    position: absolute;
-    overflow: hidden;
+  // const Instruction = styled.div`
+  //   margin-top: 30px;
 
-    text-align: center;
+  //   color: rgba(0, 0, 0, 0.64);
+  //   text-align: center;
+  //   font-family: Tmoney RoundWind;
+  //   font-size: 60px;
+  //   font-style: normal;
+  //   font-weight: 800;
+  //   line-height: normal;
+  // `;
 
-    margin-top: -625px;
-    margin-left: 250px;
+  // const Transcript = styled.p`
+  //   position: absolute;
+  //   overflow: hidden;
 
-    width: 400px;
-    height: 400px;
+  //   text-align: center;
 
-    color: #000;
-    text-align: center;
-    font-family: Tmoney RoundWind;
-    font-size: 60px;
-    font-style: normal;
-    font-weight: 800;
-    line-height: normal;
-  `;
+  //   margin-top: -625px;
+  //   margin-left: 250px;
+
+  //   width: 400px;
+  //   height: 400px;
+
+  //   color: #000;
+  //   text-align: center;
+  //   font-family: Tmoney RoundWind;
+  //   font-size: 60px;
+  //   font-style: normal;
+  //   font-weight: 800;
+  //   line-height: normal;
+  // `;
 
   const {
     transcript,
@@ -208,8 +288,15 @@ const Dictaphone = () => {
           width="900"
         />
       </div>{" "}
-      <Transcript
+      {/* <Transcript
         onClick={SpeechRecognition.startListening}
+        empty={transcript === ""}
+      > */}
+      <Transcript
+        onClick={() => {
+          SpeechRecognition.startListening();
+          setUserContent(transcript); // transcript를 userContent로 설정
+        }}
         empty={transcript === ""}
       >
         {transcript}
@@ -226,7 +313,7 @@ const Dictaphone = () => {
       {/* <button onClick={resetTranscript}>Reset</button> */}
       {!listening && (
         <SendBtn
-          onClick={GoWaiting}
+          onClick={onSendButtonClick}
           src={`${process.env.PUBLIC_URL}/images_minwoo/sendBtn.png`}
         ></SendBtn>
       )}
