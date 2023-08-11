@@ -1,0 +1,29 @@
+::-webkit-scrollbar {
+  background: rgba(255, 173, 124, 0.5);
+  width: 12px;
+  z-index: 100;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 173, 124, 0.7);
+  z-index: 103;
+}
+
+::-webkit-scrollbar-button {
+  width: 15px;
+  height: 13px;
+  flex-shrink: 0;
+  z-index: 102;
+}
+
+::-webkit-scrollbar-button:start:decrement {
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.41232 7.29163L7.58768 7.29163C7.91365 7.29163 8.11338 6.9342 7.94254 6.65659L5.35486 2.4516C5.19216 2.18721 4.80785 2.18721 4.64514 2.4516L2.05746 6.65659C1.88662 6.9342 2.08635 7.29163 2.41232 7.29163Z" fill="black"/></svg>')
+    center center no-repeat;
+  transform: rotate(-90deg);
+}
+
+::-webkit-scrollbar-button:end:increment {
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.41232 2.70837L7.58768 2.70837C7.91365 2.70837 8.11338 3.0658 7.94254 3.34341L5.35486 7.5484C5.19216 7.81279 4.80785 7.81279 4.64514 7.5484L2.05746 3.34341C1.88662 3.0658 2.08635 2.70837 2.41232 2.70837Z" fill="black"/></svg>')
+    center center no-repeat;
+  transform: rotate(90deg);
+}
