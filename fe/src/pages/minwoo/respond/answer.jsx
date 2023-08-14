@@ -1,3 +1,4 @@
+//세민 합치기
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";

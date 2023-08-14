@@ -29,8 +29,12 @@ class QuestionViewSet(ModelViewSet):
 
     permission_classes = [AllowAny]
 
+    # def perform_create(self, serializer):
+    #     serializer.save(writer=self.request.user.username)
     def perform_create(self, serializer):
-        serializer.save(writer=self.request.user.username)
+        user_name = self.request.data.get("writer")  # 프론트엔드에서 전송한 사용자 이름
+        user = User.objects.get(username=user_name)  # 사용자 인스턴스 가져오기
+        serializer.save(writer=user)
 
 
 class AnswerViewSet(ModelViewSet):
@@ -60,7 +64,8 @@ class UserQuestionListView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user.username
-        return User.objects.filter(id=user.id)
+        # return User.objects.filter(id=user.id)
+        return User.objects.filter(writer=user)
 
 
 class UserAnswerListView(ListAPIView):
