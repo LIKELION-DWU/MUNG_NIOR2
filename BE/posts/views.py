@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Question, Answer, User
+from .models import Question, Answer
 from .serializers import (
     QuestionSerializer,
     AnswerSerializer,
@@ -18,6 +18,10 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 
 class QuestionViewSet(ModelViewSet):
     queryset = Question.objects.all()
@@ -26,7 +30,7 @@ class QuestionViewSet(ModelViewSet):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        serializer.save(writer=self.request.user)
+        serializer.save(writer=self.request.user.username)
 
 
 class AnswerViewSet(ModelViewSet):
@@ -55,7 +59,7 @@ class UserQuestionListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user.username
         return User.objects.filter(id=user.id)
 
 
