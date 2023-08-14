@@ -184,92 +184,62 @@ const Dictaphone = () => {
   const navigate = useNavigate();
   const [userContent, setUserContent] = useState("");
   //로그인 이름 받기
+  const UserNameQ = localStorage.getItem("loggedInUserNameQ");
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const GoWaiting = () => {
     navigate("/Waiting");
   };
-  console.log(userContent);
-  const onSendButtonClick = () => {
+
+  const onSendButtonClick = async () => {
     // 사용자 입력을 JSON 객체로 생성합니다.
-    const newQuestion = {
-      content: userContent,
-      writer: "student1",
-    };
-
-    // Django API 엔드포인트 주소
-    const apiUrl = "http://127.0.0.1:8000/questions/";
-
-    // axios를 사용하여 POST 요청을 보냅니다.
-    axios
-      .post(apiUrl, newQuestion)
-      .then((response) => {
-        // 서버 응답에 대한 처리 (예: 성공 메시지 표시)
-        console.log("요청 성공:", response.data);
-        // GoWaiting(); // 대기 페이지로 이동
-      })
-      .catch((error) => {
-        // 오류 처리
-        console.error("오류 발생:", error);
+    console.log(userContent);
+    try {
+      // 로그인 정보를 서버로 전송
+      const response = await axios.post("http://127.0.0.1:8000/questions/", {
+        content: userContent,
+        writer: UserNameQ,
       });
+
+      console.log(response);
+
+      if (response.status === 200) {
+        alert("질문 등록에 성공했습니다.");
+        //localStorage.setItem("loggedInUserNameQ", nameQ);
+        //gotoMainQ();
+      } else {
+        alert("로그인에 실패했습니다. 다시 시도해주세요.");
+        console.log(response.data);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        alert("400오류.");
+      } else {
+        console.error("질문 등록 중 오류 발생:", error);
+        alert("질문등록 중에 오류가 발생했습니다. 다시 시도해주세요.");
+      }
+    }
   };
 
-  // const Div1 = styled.div`
-  //   height: 565px;
+  const onEndSpeechRecognition = () => {
+    // setUserContent(transcript);
+    if (!listening) {
+      setUserContent(transcript);
+    }
+  };
 
-  //   padding-top: 20px;
-  //   padding-left: 190px;
-  // `;
-
-  // const P2 = styled.p`
-  //   display: inline-block;
-  //   margin-left: 20px;
-  //   margin-top: -500px;
-
-  //   color: #ff6d2e;
-  //   font-size: 30px;
-  //   font-style: normal;
-  //   font-weight: 900;
-  // `;
-
-  // const Instruction = styled.div`
-  //   margin-top: 30px;
-
-  //   color: rgba(0, 0, 0, 0.64);
-  //   text-align: center;
-  //   font-family: Tmoney RoundWind;
-  //   font-size: 60px;
-  //   font-style: normal;
-  //   font-weight: 800;
-  //   line-height: normal;
-  // `;
-
-  // const Transcript = styled.p`
-  //   position: absolute;
-  //   overflow: hidden;
-
-  //   text-align: center;
-
-  //   margin-top: -625px;
-  //   margin-left: 250px;
-
-  //   width: 400px;
-  //   height: 400px;
-
-  //   color: #000;
-  //   text-align: center;
-  //   font-family: Tmoney RoundWind;
-  //   font-size: 60px;
-  //   font-style: normal;
-  //   font-weight: 800;
-  //   line-height: normal;
-  // `;
-
+  // // const {
+  // //   transcript,
+  // //   listening,
+  // //   resetTranscript,
+  // //   browserSupportsSpeechRecognition,
+  // // } = useSpeechRecognition();
   const {
     transcript,
     listening,
     resetTranscript,
     browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  } = useSpeechRecognition({ onEnd: onEndSpeechRecognition });
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
@@ -292,25 +262,27 @@ const Dictaphone = () => {
         onClick={SpeechRecognition.startListening}
         empty={transcript === ""}
       > */}
-      <Transcript
-        onClick={() => {
-          SpeechRecognition.startListening();
-          setUserContent(transcript); // transcript를 userContent로 설정
-        }}
-        empty={transcript === ""}
-      >
-        {transcript}
-        {transcript === "" && (
-          <Instruction>
-            접시를 누르면
-            <br />
-            음성인식을
-            <br /> 시작합니다
-          </Instruction>
-        )}
-      </Transcript>
-      {/* <button onClick={SpeechRecognition.stopListening}>Stop</button> */}
-      {/* <button onClick={resetTranscript}>Reset</button> */}
+      {UserNameQ && (
+        <Transcript
+          onClick={() => {
+            SpeechRecognition.startListening();
+            // setUserContent(transcript);
+          }}
+          empty={transcript === "" ? "true" : "false"}
+        >
+          {transcript}
+          {transcript === "" && (
+            <Instruction>
+              접시를 누르면
+              <br />
+              음성인식을
+              <br /> 시작합니다
+            </Instruction>
+          )}
+        </Transcript>
+      )}
+      {/* <button onClick={SpeechRecognition.stopListening}>Stop</button>
+      <button onClick={resetTranscript}>Reset</button> */}
       {!listening && (
         <SendBtn
           onClick={onSendButtonClick}
@@ -345,7 +317,7 @@ const Question = () => {
       </Logo>
       <MenuContainer>
         <Menu className="question">질문하기</Menu>
-        <Menu onCick={GoLogout}>로그아웃</Menu>
+        <Menu onClick={GoLogout}>로그아웃</Menu>
         <Menu onClick={GoMyPage}>질문 기록</Menu>
       </MenuContainer>
 
