@@ -192,40 +192,75 @@ const Dictaphone = () => {
   };
 
   const onSendButtonClick = async () => {
-    // 사용자 입력을 JSON 객체로 생성합니다.
     console.log(userContent);
     try {
-      // 로그인 정보를 서버로 전송
+      // 로그인 정보와 사용자 입력을 서버로 전송
       const response = await axios.post("http://127.0.0.1:8000/questions/", {
         content: userContent,
-        writer: UserNameQ,
+        writer: UserNameQ, // 이 부분은 사용자 이름을 전송하는 부분입니다.
       });
 
-      console.log(response);
-
-      if (response.status === 200) {
+      if (response.status === 201) {
         alert("질문 등록에 성공했습니다.");
-        //localStorage.setItem("loggedInUserNameQ", nameQ);
-        //gotoMainQ();
       } else {
-        alert("로그인에 실패했습니다. 다시 시도해주세요.");
-        console.log(response.data);
+        alert("질문 등록에 실패했습니다.");
       }
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert("400오류.");
-      } else {
-        console.error("질문 등록 중 오류 발생:", error);
-        alert("질문등록 중에 오류가 발생했습니다. 다시 시도해주세요.");
-      }
+      console.error("질문 등록 중 오류 발생:", error);
+      alert("질문등록 중에 오류가 발생했습니다.");
     }
   };
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/signup/student/"
+        );
+        setLoggedInUser(response.data);
+
+        console.log(response.data[0]);
+      } catch (error) {
+        console.error("첫번째 오류 발생:", error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
+
+  // loggedInUser가 업데이트되면 로그를 출력
+  useEffect(() => {
+    console.log("로그인된 사용자 정보:", loggedInUser);
+  }, [loggedInUser]);
+
+  // const onSendButtonClick = async (user) => {
+  //   console.log("궁금한부분:", user);
+
+  //   try {
+  //     console.log("try안에서 확인", user);
+
+  //     const response = await axios.post("http://127.0.0.1:8000/questions/", {
+  //       content: userContent,
+  //       // writer: UserNameQ,
+  //       // User 인스턴스 할당
+  //       writer: user.username,
+  //     });
+
+  //     if (response.status === 200) {
+  //       alert("질문 등록에 성공했습니다.");
+  //       //gotoMainQ();
+  //     } else {
+  //       alert("로그인에 실패했습니다. 다시 시도해주세요.");
+  //       console.log(response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("오류 발생:", error);
+  //     alert("오류가 발생했습니다.");
+  //   }
+  // };
+
   const onEndSpeechRecognition = () => {
-    // setUserContent(transcript);
-    if (!listening) {
-      setUserContent(transcript);
-    }
+    setUserContent(transcript);
+    setLoggedInUser((prevUser) => ({ ...prevUser, content: transcript }));
   };
 
   // // const {
@@ -266,7 +301,7 @@ const Dictaphone = () => {
         <Transcript
           onClick={() => {
             SpeechRecognition.startListening();
-            // setUserContent(transcript);
+            setUserContent(transcript);
           }}
           empty={transcript === "" ? "true" : "false"}
         >
@@ -285,7 +320,8 @@ const Dictaphone = () => {
       <button onClick={resetTranscript}>Reset</button> */}
       {!listening && (
         <SendBtn
-          onClick={onSendButtonClick}
+          // onClick={onSendButtonClick}
+          onClick={() => onSendButtonClick(loggedInUser)}
           src={`${process.env.PUBLIC_URL}/images_minwoo/sendBtn.png`}
         ></SendBtn>
       )}
