@@ -176,7 +176,7 @@ const LookAnswer = () => {
           답변보기
         </Menu>
         <Menu onClick={GoLogout}>로그아웃</Menu>
-        <Menu onClick={GoMyPage}>나의 기록</Menu>
+        <Menu onClick={GoMyPage}>질문 기록</Menu>
       </MenuContainer>
 
       <MainContainer>

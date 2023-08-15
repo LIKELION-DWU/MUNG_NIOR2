@@ -1,7 +1,7 @@
-//세민 합치기
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Container = styled.div`
   position: relative;
@@ -134,7 +134,18 @@ const NextBtn = styled.button`
   background-color: transparent;
   border: none;
 `;
-const List = () => {
+
+const fetchQuestions = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/questions/");
+    return response.data; // 실제 데이터 배열 반환
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    return []; // 에러 시 빈 배열 반환
+  }
+};
+
+const List = ({ questionContent }) => {
   //
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -144,7 +155,7 @@ const List = () => {
 
   return (
     <WhiteBox expanded={isExpanded}>
-      <QuestBox>Q. 키오스크 결제는 어떻게?</QuestBox>
+      <QuestBox>Q. {questionContent}</QuestBox>
       <AnswerBox expanded={isExpanded}>
         <InputAnswer
           onClick={handleInputClick}
@@ -160,7 +171,7 @@ const List = () => {
           }}
         />
       </AnswerBox>
-      <NextBtn>
+      <NextBtn onClick>
         <img src="./images_minwoo/next.png" style={{ width: "180px" }} />
       </NextBtn>
     </WhiteBox>
@@ -170,6 +181,16 @@ const List = () => {
 //페이지 함수
 const Answer = () => {
   const navigate = useNavigate();
+  const [questionData, setQuestionData] = useState([]);
+
+  useEffect(() => {
+    // 페이지 로딩 시 API 호출하여 데이터 가져오기
+    async function fetchData() {
+      const data = await fetchQuestions();
+      setQuestionData(data);
+    }
+    fetchData();
+  }, []);
 
   const GoMyPage = () => {
     navigate("/RespondMyPage");
@@ -202,9 +223,9 @@ const Answer = () => {
       </MenuContainer>
 
       <ListContainer>
-        <List />
-        <List />
-        <List />
+        {questionData.map((question) => (
+          <List key={question.id} questionContent={question.content} />
+        ))}
       </ListContainer>
     </Container>
   );

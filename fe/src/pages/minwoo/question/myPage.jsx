@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import { useNavigate } from "react-router-dom";
@@ -29,12 +29,19 @@ const Logo = styled.div`
   z-index: 999;
 `;
 const MenuContainer = styled.div`
-  position: relative;
-  margin-top: -60px;
-  margin-left: 300px;
+  position: fixed;
+  width: 788px;
+  height: 85px;
+  padding-top: 40px;
+
+  margin-top: -78px;
+  margin-left: 480px;
+  background: rgba(255, 255, 255, 0.78);
 
   line-height: 1;
+  z-index: 5;
 `;
+
 const Menu = styled.div`
   position: relative;
   display: inline-block;
@@ -48,7 +55,7 @@ const Menu = styled.div`
   font-style: normal;
   font-weight: 800;
 
-  &.mypage {
+  &.question {
     position: relative;
     border-bottom: 4px solid #000;
     padding-bottom: 4px;
