@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+//css
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
@@ -180,22 +181,29 @@ const Transcript = styled.p`
   line-height: normal;
 `;
 
+//코드
 const Dictaphone = () => {
+  //선언
   const navigate = useNavigate();
-  const [userContent, setUserContent] = useState("");
-  //로그인 이름 받기
+
   const UserNameQ = localStorage.getItem("loggedInUserNameQ");
+
+  const [userContent, setUserContent] = useState("");
   const [loggedInUser, setLoggedInUser] = useState(null);
 
+  //페이지 이동 함수
   const GoWaiting = () => {
     navigate("/Waiting");
   };
 
+  //버튼을 누르면 내용이 저장이 되는 함수
   const onSendButtonClick = async () => {
     console.log(userContent);
+
     try {
       // 로그인 정보와 사용자 입력을 서버로 전송
       const response = await axios.post("http://127.0.0.1:8000/questions/", {
+        // content: userContent,
         content: userContent,
         writer: UserNameQ, // 이 부분은 사용자 이름을 전송하는 부분입니다.
       });
@@ -218,8 +226,6 @@ const Dictaphone = () => {
           "http://127.0.0.1:8000/signup/student/"
         );
         setLoggedInUser(response.data);
-
-        console.log(response.data[0]);
       } catch (error) {
         console.error("첫번째 오류 발생:", error);
       }
@@ -232,49 +238,23 @@ const Dictaphone = () => {
     console.log("로그인된 사용자 정보:", loggedInUser);
   }, [loggedInUser]);
 
-  // const onSendButtonClick = async (user) => {
-  //   console.log("궁금한부분:", user);
-
-  //   try {
-  //     console.log("try안에서 확인", user);
-
-  //     const response = await axios.post("http://127.0.0.1:8000/questions/", {
-  //       content: userContent,
-  //       // writer: UserNameQ,
-  //       // User 인스턴스 할당
-  //       writer: user.username,
-  //     });
-
-  //     if (response.status === 200) {
-  //       alert("질문 등록에 성공했습니다.");
-  //       //gotoMainQ();
-  //     } else {
-  //       alert("로그인에 실패했습니다. 다시 시도해주세요.");
-  //       console.log(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("오류 발생:", error);
-  //     alert("오류가 발생했습니다.");
-  //   }
-  // };
-
-  const onEndSpeechRecognition = () => {
-    setUserContent(transcript);
-    setLoggedInUser((prevUser) => ({ ...prevUser, content: transcript }));
+  const onEndSpeechRecognition = (finalTranscript) => {
+    setUserContent(finalTranscript);
+    setLoggedInUser((prevUser) => ({ ...prevUser, content: finalTranscript }));
   };
 
-  // // const {
-  // //   transcript,
-  // //   listening,
-  // //   resetTranscript,
-  // //   browserSupportsSpeechRecognition,
-  // // } = useSpeechRecognition();
   const {
     transcript,
     listening,
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition({ onEnd: onEndSpeechRecognition });
+
+  useEffect(() => {
+    if (transcript !== "") {
+      onEndSpeechRecognition(transcript);
+    }
+  }, [transcript]);
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
@@ -284,19 +264,12 @@ const Dictaphone = () => {
     <Div1>
       <P>음성인식: </P>
       <P2>{listening ? "시작" : "멈춤"}</P2>
-      <div
-        // onClick={SpeechRecognition.startListening}
-        style={{ marginTop: "-100px" }}
-      >
+      <div style={{ marginTop: "-100px" }}>
         <img
           src={`${process.env.PUBLIC_URL}/images_minwoo/plate.png`}
           width="900"
         />
       </div>{" "}
-      {/* <Transcript
-        onClick={SpeechRecognition.startListening}
-        empty={transcript === ""}
-      > */}
       {UserNameQ && (
         <Transcript
           onClick={() => {
@@ -316,11 +289,8 @@ const Dictaphone = () => {
           )}
         </Transcript>
       )}
-      {/* <button onClick={SpeechRecognition.stopListening}>Stop</button>
-      <button onClick={resetTranscript}>Reset</button> */}
       {!listening && (
         <SendBtn
-          // onClick={onSendButtonClick}
           onClick={() => onSendButtonClick(loggedInUser)}
           src={`${process.env.PUBLIC_URL}/images_minwoo/sendBtn.png`}
         ></SendBtn>
