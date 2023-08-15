@@ -210,6 +210,7 @@ const Dictaphone = () => {
 
       if (response.status === 201) {
         alert("질문 등록에 성공했습니다.");
+        GoWaiting();
       } else {
         alert("질문 등록에 실패했습니다.");
       }
