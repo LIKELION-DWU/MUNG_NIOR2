@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 from .models import Question, Answer
 from .serializers import (
     QuestionSerializer,
@@ -37,10 +38,10 @@ class QuestionViewSet(ModelViewSet):
         serializer.save(writer=user)
 
 
+
 class AnswerViewSet(ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
-
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
@@ -48,14 +49,34 @@ class AnswerViewSet(ModelViewSet):
         question = get_object_or_404(Question, pk=question_id)
         next_answer_id = Answer.objects.filter(question=question).count() + 1
 
-        serializer.save(
-            writer=self.request.user, question=question, answer_id=next_answer_id
-        )
-        # serializer.save(writer=self.request.user)
+        user_name = self.request.data.get("writer")
+        user = User.objects.get(username=user_name)
 
-    def get_queryset(self, **kwargs):  # Override
+        serializer.save(
+            writer=user, question=question, answer_id=next_answer_id
+        )
+
+    def get_queryset(self, **kwargs):
         id = self.kwargs["question_id"]
         return self.queryset.filter(question=id)
+
+# class UserQuestionListView(ListAPIView):
+#     serializer_class = MyQuestionSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         user = self.request.user.username
+#         # return User.objects.filter(id=user.id)
+#         return User.objects.filter(writer=user)
+
+
+# class UserAnswerListView(ListAPIView):
+#     serializer_class = MyAnswerSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         return User.objects.filter(id=user.id)
 
 
 class UserQuestionListView(ListAPIView):
@@ -63,9 +84,8 @@ class UserQuestionListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user.username
-        # return User.objects.filter(id=user.id)
-        return User.objects.filter(writer=user)
+        user = self.request.user
+        return User.objects.filter(id=user.id)
 
 
 class UserAnswerListView(ListAPIView):

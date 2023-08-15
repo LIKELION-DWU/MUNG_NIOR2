@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
@@ -182,7 +183,17 @@ const MainListBox = styled.div`
   padding-top: 20px;
 `;
 
-const List = () => {
+const fetchQuestions = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/my_questions/");
+    return response.data; // 실제 데이터 배열 반환
+  } catch (error) {
+    alert("Error fetching questions:", error);
+    return []; // 에러 시 빈 배열 반환
+  }
+};
+
+const List = ({ question }) => {
   const navigate = useNavigate();
 
   const GoRecord = () => {
@@ -229,7 +240,7 @@ const List = () => {
 
   return (
     <ListWhite>
-      <ListContent>gkgkkkkkkkkkkkkkkkkkkkkggggggggggggggggg</ListContent>
+      <ListContent>{question.content}</ListContent>
       <ListBtn
         onClick={GoRecord}
         src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
@@ -240,6 +251,16 @@ const List = () => {
 
 const QuestMy = () => {
   const navigate = useNavigate();
+  const [questionData, setQuestionData] = useState([]);
+
+  useEffect(() => {
+    // 페이지 로딩 시 API 호출하여 데이터 가져오기
+    async function fetchData() {
+      const data = await fetchQuestions();
+      setQuestionData(data);
+    }
+    fetchData();
+  }, []);
 
   const GoLogout = () => {
     navigate("/");
@@ -271,9 +292,9 @@ const QuestMy = () => {
         <MainUser />
         <MainTitle>질문을 기록합니다()</MainTitle>
         <MainListBox>
-          <List />
-          <List />
-          <List />
+          {questionData.map((question) => (
+            <List key={question.id} question={question} />
+          ))}
         </MainListBox>
       </MainContainer>
     </Container>

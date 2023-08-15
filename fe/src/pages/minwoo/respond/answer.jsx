@@ -145,12 +145,45 @@ const fetchQuestions = async () => {
   }
 };
 
-const List = ({ questionContent }) => {
-  //
+const List = ({ questionContent, questionId }) => {
+  const navigate = useNavigate();
+  const [answerContent, setAnswerContent] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const UserNameR = localStorage.getItem("loggedInUserNameR");
+
+  const GoMyPage = () => {
+    navigate("/RespondMyPage");
+  };
 
   const handleInputClick = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleAnswerChange = (event) => {
+    setAnswerContent(event.target.value); // 사용자가 입력할 때 답변 내용 업데이트
+  };
+
+  const handleNextClick = async () => {
+    try {
+      // API 엔드포인트에 POST 요청 보내기
+      console.log(answerContent);
+      const response = await axios.post(
+        `http://127.0.0.1:8000/questions/${questionId}/answers/`,
+        {
+          comment: answerContent,
+          photo: null,
+          writer: UserNameR,
+        }
+      );
+
+      // POST 성공 후 수행할 작업이 있다면 여기에 추가
+      if ((response.status = 200)) alert("답변이 성공적으로 전송되었습니다!");
+    } catch (error) {
+      alert("답변 전송 중 에러:", error);
+    }
+
+    // 답변 전송 후 필요한 로직 추가
   };
 
   return (
@@ -159,6 +192,8 @@ const List = ({ questionContent }) => {
       <AnswerBox expanded={isExpanded}>
         <InputAnswer
           onClick={handleInputClick}
+          onChange={handleAnswerChange}
+          value={answerContent}
           expanded={isExpanded}
         ></InputAnswer>
         <img
@@ -171,7 +206,7 @@ const List = ({ questionContent }) => {
           }}
         />
       </AnswerBox>
-      <NextBtn onClick>
+      <NextBtn onClick={handleNextClick}>
         <img src="./images_minwoo/next.png" style={{ width: "180px" }} />
       </NextBtn>
     </WhiteBox>
@@ -219,12 +254,16 @@ const Answer = () => {
           답변하기
         </Menu>
         <Menu onClick={GoLogout}>로그아웃</Menu>
-        <Menu onClick={GoMyPage}>나의 기록</Menu>
+        <Menu onClick={GoMyPage}>답변 기록</Menu>
       </MenuContainer>
 
       <ListContainer>
         {questionData.map((question) => (
-          <List key={question.id} questionContent={question.content} />
+          <List
+            key={question.id}
+            questionId={question.id}
+            questionContent={question.content}
+          />
         ))}
       </ListContainer>
     </Container>
