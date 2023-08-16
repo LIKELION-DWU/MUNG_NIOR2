@@ -193,6 +193,11 @@ const RectangleGray = styled.div`
 
 const MainR = () => {
   const navigate = useNavigate();
+
+  const gotoPreMain = () => {
+    navigate("/");
+  };
+
   const gotoAnswer = () => {
     navigate("/Answer");
   };
@@ -243,7 +248,7 @@ const MainR = () => {
       </Logo>
       <MenuContainer>
         <Menu onClick={gotoAnswer}>답변하기</Menu>
-        <Menu>로그아웃</Menu>
+        <Menu onClick={gotoPreMain}>로그아웃</Menu>
         <Menu onClick={gotoRespondMyPage}>답변 기록</Menu>
       </MenuContainer>
       <Images>

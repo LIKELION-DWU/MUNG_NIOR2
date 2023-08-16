@@ -77,7 +77,7 @@ const Choice = styled.div`
 
 const InputQ = styled.div`
   position: relative;
-  top: 85px;
+  top: 100px;
   text-align: center;
   margin-bottom: -20px;
 `;
@@ -91,7 +91,7 @@ const Input = styled.input`
   margin: auto;
   margin-top: 30px;
 
-  top: 100px;
+  top: 120px;
 
   width: 500px;
   height: 75px;
@@ -125,29 +125,11 @@ const Input = styled.input`
 const NameInput = Input;
 const PhoneInput = Input;
 
-const KakaoLogin = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin: auto;
-  margin-top: 110px;
-  cursor: pointer;
-
-  color: #000;
-  font-family: Pretendard;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
-
 const Loginbtn = styled.div`
   position: relative;
   cursor: pointer;
 
-  top: -55px;
+  top: 163px;
   left: 980px;
 `;
 
@@ -290,16 +272,6 @@ const LoginR = () => {
         onChange={handlePhoneR}
         placeholder={"전화번호"}
       ></PhoneInput>
-      <KakaoLogin>
-        or
-        <br />
-        <br />
-        <img
-          src={`${process.env.PUBLIC_URL}/images_semin/kakaologin.png`}
-          alt="kakaologin"
-          width="300px"
-        />
-      </KakaoLogin>
       <Loginbtn>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/loginbtn.png`}

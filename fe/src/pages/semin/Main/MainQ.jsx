@@ -195,6 +195,10 @@ const RectangleGray = styled.div`
 const MainQ = () => {
   const navigate = useNavigate();
 
+  const gotoPreMain = () => {
+    navigate("/");
+  };
+
   const gotoQuestionMyPage = () => {
     navigate("/QuestionMyPage");
   };
@@ -246,7 +250,7 @@ const MainQ = () => {
       </Logo>
       <MenuContainer>
         <Menu onClick={gotoQuestion}>질문하기</Menu>
-        <Menu>로그아웃</Menu>
+        <Menu onClick={gotoPreMain}>로그아웃</Menu>
         <Menu onClick={gotoQuestionMyPage}>질문 기록</Menu>
       </MenuContainer>
       <Images>

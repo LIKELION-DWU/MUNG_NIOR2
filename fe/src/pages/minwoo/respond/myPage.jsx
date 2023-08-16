@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -175,7 +175,17 @@ const MainListBox = styled.div`
   padding-top: 20px;
 `;
 
-const List = () => {
+const fetchAnswers = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/my_answers/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching answers:", error);
+    return [];
+  }
+};
+
+const List = ({ answerContent }) => {
   const navigate = useNavigate();
 
   const GoRecord = () => {
@@ -220,9 +230,7 @@ const List = () => {
 
   return (
     <ListWhite>
-      <ListContent>
-        doqdmsldl 궈나낙 낙낙가나아아아ㅏ아아아ㅏㅇddddddㅇ
-      </ListContent>
+      <ListContent>{answerContent}</ListContent>
       <ListBtn
         onClick={GoRecord}
         src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
@@ -254,6 +262,19 @@ const MoreBtn = styled.button`
 
 const ResMy = () => {
   const navigate = useNavigate();
+  const [answers, setAnswers] = useState([]);
+
+  useEffect(() => {
+    async function fetchAnswers() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/my_answers/");
+        setAnswers(response.data);
+      } catch (error) {
+        console.error("Error fetching answers:", error);
+      }
+    }
+    fetchAnswers();
+  }, []);
 
   const GoMyPage = () => {
     navigate("/RespondMyPage");
@@ -287,9 +308,9 @@ const ResMy = () => {
         <MainUser />
         <MainTitle>답변을 기록합니다()</MainTitle>
         <MainListBox>
-          <List />
-          <List />
-          <List />
+          {answers.map((answer) => (
+            <List key={answer.id} answerContent={answer.comment} />
+          ))}
         </MainListBox>
       </MainContainer>
       <MoreBtn>답변 더하기</MoreBtn>
