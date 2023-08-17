@@ -187,6 +187,7 @@ const Dictaphone = () => {
   const navigate = useNavigate();
 
   const UserNameQ = localStorage.getItem("loggedInUserNameQ");
+  const StudentIdQ = localStorage.getItem("loggedInUserIdQ");
 
   const [userContent, setUserContent] = useState("");
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -206,6 +207,7 @@ const Dictaphone = () => {
         // content: userContent,
         content: userContent,
         writer: UserNameQ, // 이 부분은 사용자 이름을 전송하는 부분입니다.
+        studentId: StudentIdQ,
       });
 
       if (response.status === 201) {

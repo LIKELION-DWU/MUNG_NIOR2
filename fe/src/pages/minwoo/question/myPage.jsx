@@ -80,7 +80,7 @@ const MainContainer = styled.div`
   border-radius: 0px 150px 0px 0px;
   background: linear-gradient(
     180deg,
-    rgba(176, 173, 173, 0.2) 0%,
+    rgba(255, 109, 46, 0.2) 0%,
     rgba(0, 0, 0, 0) 100%
   );
 `;
@@ -94,7 +94,7 @@ const MainUser = () => {
       stroke: `#FF6D2E`, // 프로그래스 바 채우는 부분의 색상
     },
     trail: {
-      stroke: "#D9D9D9", // 프로그래스 바의 빈 부분의 색상
+      stroke: "#FFF", // 프로그래스 바의 빈 부분의 색상
     },
     background: {
       fill: "#fff", // 배경색
@@ -183,15 +183,18 @@ const MainListBox = styled.div`
   padding-top: 20px;
 `;
 
-const fetchQuestions = async () => {
-  try {
-    const response = await axios.get("http://127.0.0.1:8000/my_questions/");
-    return response.data; // 실제 데이터 배열 반환
-  } catch (error) {
-    alert("Error fetching questions:", error);
-    return []; // 에러 시 빈 배열 반환
-  }
-};
+// const fetchQuestions = async () => {
+//   try {
+//     const response = await axios.get("http://127.0.0.1:8000/my_questions/");
+
+//     console.log(response.data);
+
+//     return response.data.questions;
+//   } catch (error) {
+//     alert("Error fetching questions:", error);
+//     return []; // 에러 시 빈 배열 반환
+//   }
+// };
 
 const List = ({ question }) => {
   const navigate = useNavigate();
@@ -252,15 +255,45 @@ const List = ({ question }) => {
 const QuestMy = () => {
   const navigate = useNavigate();
   const [questionData, setQuestionData] = useState([]);
+  //08/16
+  const loggedInUserIdQ = localStorage.getItem("loggedInUserIdQ"); // 로그인된 사용자의 ID를 가져옴
+  // ?user_id=${loggedInUserIdQ}
+  useEffect(() => {
+    if (loggedInUserIdQ) {
+      axios
+        .get(`http://127.0.0.1:8000/my_questions/`)
+        .then((response) => {
+          setQuestionData(response.data[0].questions);
+        })
+        .catch((error) => {
+          console.error("Error fetching user questions:", error);
+        });
+    }
+  }, [loggedInUserIdQ]);
 
   useEffect(() => {
-    // 페이지 로딩 시 API 호출하여 데이터 가져오기
-    async function fetchData() {
-      const data = await fetchQuestions();
-      setQuestionData(data);
-    }
-    fetchData();
+    const fetchUserInfo = async () => {
+      try {
+        if (loggedInUserIdQ) {
+          const response = await axios.get(
+            "http://127.0.0.1:8000/my_questions/"
+          );
+          console.log("response: ", response.data);
+
+          // const userQuestions = response.data.questions.filter(
+          //   (question) => question.studentId === parseInt(loggedInUserIdQ)
+          // );
+
+          // setQuestionData(userQuestions);
+        }
+      } catch (error) {
+        console.error("첫번째 오류 발생:", error);
+      }
+    };
+    fetchUserInfo();
   }, []);
+
+  console.log("questionData", questionData);
 
   const GoLogout = () => {
     navigate("/");
@@ -292,9 +325,13 @@ const QuestMy = () => {
         <MainUser />
         <MainTitle>질문을 기록합니다()</MainTitle>
         <MainListBox>
-          {questionData.map((question) => (
-            <List key={question.id} question={question} />
-          ))}
+          {questionData.length > 0 ? (
+            questionData.map((question) => (
+              <List key={question.id} question={question} />
+            ))
+          ) : (
+            <p>No questions available.</p>
+          )}
         </MainListBox>
       </MainContainer>
     </Container>

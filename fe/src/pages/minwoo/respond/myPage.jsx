@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
@@ -70,9 +71,10 @@ const MainContainer = styled.div`
   padding-top: 20px;
 
   border-radius: 0px 150px 0px 0px;
+
   background: linear-gradient(
     180deg,
-    rgba(176, 173, 173, 0.2) 0%,
+    rgba(255, 109, 46, 0.2) 0%,
     rgba(0, 0, 0, 0) 100%
   );
 `;
@@ -81,12 +83,26 @@ const MainUser = () => {
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
   const percentage = 2;
 
+  const navigate = useNavigate();
+
+  const GoMyPage = () => {
+    navigate("/RespondMyPage");
+  };
+
+  const GoAnswer = () => {
+    navigate("/Answer");
+  };
+
+  const GoLogout = () => {
+    navigate("/");
+  };
+
   const progressBarStyles = {
     path: {
       stroke: `#FF6D2E`, // 프로그래스 바 채우는 부분의 색상
     },
     trail: {
-      stroke: "#D9D9D9", // 프로그래스 바의 빈 부분의 색상
+      stroke: "#FFF", // 프로그래스 바의 빈 부분의 색상
     },
     background: {
       fill: "#fff", // 배경색
@@ -175,12 +191,13 @@ const MainListBox = styled.div`
   padding-top: 20px;
 `;
 
-const List = () => {
+const List = ({ comment }) => {
   const navigate = useNavigate();
 
-  const GoRecord = () => {
-    console.log("go");
-    navigate("/Record");
+  const GoRecord = (comment) => {
+    console.log("comment");
+    // navigate("/Record", { state: { comment } });
+    navigate(`/Record?comment=${encodeURIComponent(comment)}`);
   };
 
   const ListWhite = styled.div`
@@ -220,11 +237,10 @@ const List = () => {
 
   return (
     <ListWhite>
-      <ListContent>
-        doqdmsldl 궈나낙 낙낙가나아아아ㅏ아아아ㅏㅇddddddㅇ
-      </ListContent>
+      <ListContent>{comment}</ListContent>
       <ListBtn
-        onClick={GoRecord}
+        // onClick={GoRecord}
+        onClick={() => GoRecord(comment)}
         src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
       ></ListBtn>
     </ListWhite>
@@ -267,6 +283,8 @@ const ResMy = () => {
     navigate("/");
   };
 
+  const answerListQ = JSON.parse(localStorage.getItem("AnswerListQ")) || [];
+
   return (
     <Container>
       <Logo>
@@ -287,9 +305,9 @@ const ResMy = () => {
         <MainUser />
         <MainTitle>답변을 기록합니다()</MainTitle>
         <MainListBox>
-          <List />
-          <List />
-          <List />
+          {answerListQ.map((answer, index) => (
+            <List key={index} comment={answer} />
+          ))}
         </MainListBox>
       </MainContainer>
       <MoreBtn>답변 더하기</MoreBtn>
