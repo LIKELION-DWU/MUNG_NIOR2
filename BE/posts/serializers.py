@@ -28,35 +28,20 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
+        # fields = ["content","writer", "student_id", "answers"]
         fields = ["id", "content","writer", "student_id", "answers"]
 
 
 class MyQuestionSerializer(serializers.ModelSerializer):
     writer = serializers.ReadOnlyField(source="writer.username")
     student_id = serializers.ReadOnlyField(source="writer.student_id")
-    questions = serializers.SerializerMethodField()
+    questions = QuestionSerializer(many=True, read_only=True)
+    # questions = QuestionSerializer(source="question_set", many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ["student_id", "writer", "questions"]
+        fields = ["writer", "student_id", "questions"]
 
-    def get_questions(self, obj):
-        # Get all related questions for the user
-        questions = Question.objects.filter(writer=obj)
-
-        question_data = []
-        for question in questions:
-            question_item = QuestionSerializer(question).data
-
-            # Get answers related to the question
-            answers = Answer.objects.filter(question=question)
-            # 댓글 배열 추가 부분
-            answer_data = AnswerSerializer(answers, many=True).data
-
-            question_item["answers"] = answer_data
-            question_data.append(question_item)
-
-        return question_data
 
 
 

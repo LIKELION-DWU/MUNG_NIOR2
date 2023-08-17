@@ -23,6 +23,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -77,7 +81,7 @@ const Choice = styled.div`
 
 const InputQ = styled.div`
   position: relative;
-  top: 85px;
+  top: 100px;
   text-align: center;
   margin-bottom: -20px;
 `;
@@ -91,7 +95,7 @@ const Input = styled.input`
   margin: auto;
   margin-top: 30px;
 
-  top: 100px;
+  top: 120px;
 
   width: 500px;
   height: 75px;
@@ -125,34 +129,17 @@ const Input = styled.input`
 const NameInput = Input;
 const PhoneInput = Input;
 
-const KakaoLogin = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin: auto;
-  margin-top: 110px;
-  cursor: pointer;
-
-  color: #000;
-  font-family: Pretendard;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
-
 const Loginbtn = styled.div`
   position: relative;
   cursor: pointer;
 
-  top: -55px;
+  top: 163px;
   left: 980px;
 `;
 
 const LoginR = () => {
   const navigate = useNavigate();
+
   const gotoJoinChoice = () => {
     navigate("/JoinChoice");
   };
@@ -161,6 +148,9 @@ const LoginR = () => {
   };
   const gotoLoginQ = () => {
     navigate("/LoginQ");
+  };
+  const gotoPreMain = () => {
+    navigate("/");
   };
 
   const handleLoginBtnClick = async () => {
@@ -178,6 +168,8 @@ const LoginR = () => {
         );
 
         if (response.status === 200) {
+          localStorage.setItem("TokenR", response.data.Token);
+
           alert("로그인에 성공했습니다.");
           localStorage.setItem("loggedInUserNameR", nameR);
           gotoMainR();
@@ -206,7 +198,7 @@ const LoginR = () => {
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={gotoPreMain}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"

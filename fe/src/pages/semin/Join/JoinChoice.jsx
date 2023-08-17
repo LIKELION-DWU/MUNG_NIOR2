@@ -22,6 +22,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -82,6 +86,7 @@ const QA = styled.div`
 
 const JoinChoice = () => {
   const navigate = useNavigate();
+
   const gotoJoinChoice = () => {
     navigate("/JoinChoice");
   };
@@ -94,10 +99,13 @@ const JoinChoice = () => {
   const gotoJoinR = () => {
     navigate("/JoinR");
   };
+  const gotoPreMain = () => {
+    navigate("/");
+  };
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={gotoPreMain}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"

@@ -23,6 +23,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -118,6 +122,7 @@ const Nextbtn = styled.div`
 
 const JoinR = () => {
   const navigate = useNavigate();
+
   const gotoJoinChoice = () => {
     navigate("/JoinChoice");
   };
@@ -126,6 +131,9 @@ const JoinR = () => {
   };
   const gotoJoinComplete = () => {
     navigate("/JoinComplete");
+  };
+  const gotoPreMain = () => {
+    navigate("/");
   };
 
   const handleNextBtnClick = async () => {
@@ -143,7 +151,7 @@ const JoinR = () => {
           }
         );
 
-        if (response.status === 201) {
+        if (response.status === 200) {
           alert("회원가입이 완료되었습니다.");
           gotoJoinComplete();
         } else {
@@ -172,7 +180,7 @@ const JoinR = () => {
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={gotoPreMain}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"

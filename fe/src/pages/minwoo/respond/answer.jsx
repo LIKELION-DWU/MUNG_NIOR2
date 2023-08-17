@@ -28,11 +28,15 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 const MenuContainer = styled.div`
   position: relative;
-  margin-top: -60px;
-  margin-left: 490px;
+  margin-top: -41px;
+  margin-left: 461px;
 
   line-height: 1;
 `;
@@ -64,7 +68,7 @@ const Menu = styled.div`
 
 // 내용
 const ListContainer = styled.div`
-  background: #00ff22;
+  background: rgba(255, 109, 46, 0.2);
 
   margin-top: 30px;
   padding: 20px;
@@ -162,7 +166,12 @@ const List = ({ questionContent, questionId }) => {
   };
 
   const handleInputClick = () => {
-    setIsExpanded(!isExpanded);
+    // setIsExpanded(!isExpanded);
+    if (imgFile.length > 0) {
+      setIsExpanded(true); // 이미지가 업로드되었을 때에만 expanded를 true로 설정
+    } else {
+      setIsExpanded(!isExpanded); // 이미지가 없을 때 기존의 expanded 값을 토글
+    }
   };
 
   const handleAnswerChange = (event) => {
@@ -187,7 +196,8 @@ const List = ({ questionContent, questionId }) => {
       if ((response.status = 200)) {
         const storedAnswers =
           JSON.parse(localStorage.getItem("AnswerListQ")) || [];
-        storedAnswers.push(answerContent);
+        // storedAnswers.push(answerContent);
+        storedAnswers.push({ content: answerContent, img: imgFile });
         localStorage.setItem("AnswerListQ", JSON.stringify(storedAnswers));
         alert("답변이 성공적으로 전송되었습니다!");
       }
@@ -277,18 +287,19 @@ const Answer = () => {
   const GoMyPage = () => {
     navigate("/RespondMyPage");
   };
-
   const GoAnswer = () => {
     navigate("/Answer");
   };
-
   const GoLogout = () => {
     navigate("/");
+  };
+  const GoMainR = () => {
+    navigate("/MainR");
   };
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={GoMainR}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"

@@ -35,8 +35,8 @@ const MenuContainer = styled.div`
   height: 85px;
   padding-top: 40px;
 
-  margin-top: -78px;
-  margin-left: 480px;
+  margin-top: -80.5px;
+  margin-left: 461px;
   background: rgba(255, 255, 255, 0.78);
 
   line-height: 1;
@@ -56,7 +56,7 @@ const Menu = styled.div`
   font-style: normal;
   font-weight: 800;
 
-  &.question {
+  &.design {
     position: relative;
     border-bottom: 4px solid #000;
     padding-bottom: 4px;
@@ -87,7 +87,12 @@ const MainContainer = styled.div`
 
 const MainUser = () => {
   const loggedInUserNameQ = localStorage.getItem("loggedInUserNameQ");
-  const percentage = 2;
+  const QuestionLength =
+    JSON.parse(localStorage.getItem("QuestionLength")) || 0;
+
+  const progressBarIncrement = 2;
+
+  const percentage = Math.min(QuestionLength * progressBarIncrement, 100);
 
   const progressBarStyles = {
     path: {
@@ -183,25 +188,18 @@ const MainListBox = styled.div`
   padding-top: 20px;
 `;
 
-// const fetchQuestions = async () => {
-//   try {
-//     const response = await axios.get("http://127.0.0.1:8000/my_questions/");
-
-//     console.log(response.data);
-
-//     return response.data.questions;
-//   } catch (error) {
-//     alert("Error fetching questions:", error);
-//     return []; // 에러 시 빈 배열 반환
-//   }
-// };
-
 const List = ({ question }) => {
   const navigate = useNavigate();
 
-  const GoRecord = () => {
+  console.log("question: ", question.answers.comment);
+
+  const GoRecord = (questionId) => {
     console.log("go");
-    navigate("/LookAnswer");
+    navigate(`/LookAnswer?question=${encodeURIComponent(questionId)}`);
+  };
+
+  const GoWaitAnswer = () => {
+    navigate("/WaitAnswer");
   };
 
   const ListWhite = styled.div`
@@ -245,7 +243,8 @@ const List = ({ question }) => {
     <ListWhite>
       <ListContent>{question.content}</ListContent>
       <ListBtn
-        onClick={GoRecord}
+        // onClick={() => GoRecord(question.id)}
+        onClick={GoWaitAnswer}
         src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
       ></ListBtn>
     </ListWhite>
@@ -256,44 +255,35 @@ const QuestMy = () => {
   const navigate = useNavigate();
   const [questionData, setQuestionData] = useState([]);
   //08/16
-  const loggedInUserIdQ = localStorage.getItem("loggedInUserIdQ"); // 로그인된 사용자의 ID를 가져옴
-  // ?user_id=${loggedInUserIdQ}
-  useEffect(() => {
-    if (loggedInUserIdQ) {
-      axios
-        .get(`http://127.0.0.1:8000/my_questions/`)
-        .then((response) => {
-          setQuestionData(response.data[0].questions);
-        })
-        .catch((error) => {
-          console.error("Error fetching user questions:", error);
-        });
-    }
-  }, [loggedInUserIdQ]);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        if (loggedInUserIdQ) {
-          const response = await axios.get(
-            "http://127.0.0.1:8000/my_questions/"
-          );
-          console.log("response: ", response.data);
+        const authToken = localStorage.getItem("TokenQ");
+        console.log(authToken);
 
-          // const userQuestions = response.data.questions.filter(
-          //   (question) => question.studentId === parseInt(loggedInUserIdQ)
-          // );
+        const response = await axios.get(
+          "http://127.0.0.1:8000/my_questions/",
+          {
+            headers: {
+              Authorization: `Token ${authToken}`, // 사용자 토큰을 헤더에 추가
+            },
+          }
+        );
 
-          // setQuestionData(userQuestions);
-        }
+        console.log(response);
+
+        const QuestionLength = response.data.questions.length;
+        localStorage.setItem("QuestionLength", QuestionLength);
+
+        const questionData = response.data.questions; // "questions" 필드를 직접 가져옴
+        setQuestionData(questionData);
       } catch (error) {
         console.error("첫번째 오류 발생:", error);
       }
     };
     fetchUserInfo();
   }, []);
-
-  console.log("questionData", questionData);
 
   const GoLogout = () => {
     navigate("/");
@@ -304,11 +294,16 @@ const QuestMy = () => {
   const GoQuestion = () => {
     navigate("/Question");
   };
+  const GoMainQ = () => {
+    navigate("/MainQ");
+  };
+  const QuestionLength = localStorage.getItem("QuestionLength");
 
   return (
     <Container>
       <Logo>
         <img
+          onClick={GoMainQ}
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"
           width="150px"
@@ -317,13 +312,13 @@ const QuestMy = () => {
       <MenuContainer>
         <Menu onClick={GoQuestion}>질문하기</Menu>
         <Menu onClick={GoLogout}>로그아웃</Menu>
-        <Menu onClick={GoMyPage} className="mypage">
+        <Menu onClick={GoMyPage} className="design">
           질문 기록
         </Menu>
       </MenuContainer>
       <MainContainer>
         <MainUser />
-        <MainTitle>질문을 기록합니다()</MainTitle>
+        <MainTitle>질문을 기록합니다 ({QuestionLength}) </MainTitle>
         <MainListBox>
           {questionData.length > 0 ? (
             questionData.map((question) => (
