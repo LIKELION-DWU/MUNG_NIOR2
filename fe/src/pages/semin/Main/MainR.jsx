@@ -199,6 +199,9 @@ const MainR = () => {
   const gotoRespondMyPage = () => {
     navigate("/RespondMyPage");
   };
+  const gotoPreMain = () => {
+    navigate("/");
+  };
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -243,7 +246,7 @@ const MainR = () => {
       </Logo>
       <MenuContainer>
         <Menu onClick={gotoAnswer}>답변하기</Menu>
-        <Menu>로그아웃</Menu>
+        <Menu onClick={gotoPreMain}>로그아웃</Menu>
         <Menu onClick={gotoRespondMyPage}>답변 기록</Menu>
       </MenuContainer>
       <Images>

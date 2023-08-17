@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
 
 # from rest_framework import generics
 from rest_framework.generics import ListAPIView
@@ -30,12 +31,11 @@ class QuestionViewSet(ModelViewSet):
 
     permission_classes = [AllowAny]
 
-    # def perform_create(self, serializer):
-    #     serializer.save(writer=self.request.user.username)
+        
     def perform_create(self, serializer):
         user_name = self.request.data.get("writer")  # 프론트엔드에서 전송한 사용자 이름
         user = User.objects.get(username=user_name)  # 사용자 인스턴스 가져오기
-        serializer.save(writer=user)
+        serializer.save(writer=user, student_id=user.student_id)
 
 
 
@@ -60,28 +60,11 @@ class AnswerViewSet(ModelViewSet):
         id = self.kwargs["question_id"]
         return self.queryset.filter(question=id)
 
-# class UserQuestionListView(ListAPIView):
-#     serializer_class = MyQuestionSerializer
-#     permission_classes = [IsAuthenticated]
 
-#     def get_queryset(self):
-#         user = self.request.user.username
-#         # return User.objects.filter(id=user.id)
-#         return User.objects.filter(writer=user)
-
-
-# class UserAnswerListView(ListAPIView):
-#     serializer_class = MyAnswerSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         user = self.request.user
-#         return User.objects.filter(id=user.id)
-
-
+# 유저 관련해서 프론트랑 다시 시도해보기
 class UserQuestionListView(ListAPIView):
     serializer_class = MyQuestionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         user = self.request.user
@@ -90,8 +73,8 @@ class UserQuestionListView(ListAPIView):
 
 class UserAnswerListView(ListAPIView):
     serializer_class = MyAnswerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        user = self.request.user
-        return User.objects.filter(id=user.id)
+        teacher_id = self.request.user.teacher_id  # 선생님의 teacher_id 가져오기
+        return User.objects.filter(id=teacher_id)

@@ -164,7 +164,17 @@ const JoinQ = () => {
           }
         );
         if (response.status === 201) {
+          // 응답 데이터를 변수에 저장
+          const reponseId = await axios.get(
+            "http://127.0.0.1:8000/signup/student/"
+          );
+          const length = reponseId.data.length;
+          const id = reponseId.data[length - 1].studentId;
+
+          localStorage.setItem("loggedInUserIdQ", id);
+
           alert("회원가입이 완료되었습니다.");
+
           gotoJoinComplete();
         } else {
           alert("회원가입에 실패했습니다. 다시 시도해주세요.");

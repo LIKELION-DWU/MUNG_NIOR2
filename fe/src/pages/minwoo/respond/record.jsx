@@ -1,7 +1,7 @@
 //세민합치기
 import React from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;
@@ -110,7 +110,6 @@ const MainContent = styled.div`
   position: absolute;
   top: 140px;
   left: 75px;
-  background: #00ff22;
 
   width: 500px;
   padding: 28px;
@@ -149,6 +148,10 @@ const Record = () => {
   const navigate = useNavigate();
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const comment = searchParams.get("comment");
+
   const GoMy = () => {
     navigate("/RespondMyPage");
   };
@@ -185,13 +188,12 @@ const Record = () => {
           <UserText>답변자</UserText>
         </User>
 
-        <MainContent>
-          오른쪽 그림처럼 길게 파인 곳에 카드를 넣으면 결제가 돼요!
-        </MainContent>
+        <MainContent>{comment || "데이터없음"}</MainContent>
 
         <MainImg></MainImg>
       </MainContainer>
 
+      {/* 나의 기록으로 돌아가도 되냐고 물어보기 */}
       <NextBtn
         src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
       ></NextBtn>

@@ -290,16 +290,6 @@ const LoginR = () => {
         onChange={handlePhoneR}
         placeholder={"전화번호"}
       ></PhoneInput>
-      <KakaoLogin>
-        or
-        <br />
-        <br />
-        <img
-          src={`${process.env.PUBLIC_URL}/images_semin/kakaologin.png`}
-          alt="kakaologin"
-          width="300px"
-        />
-      </KakaoLogin>
       <Loginbtn>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/loginbtn.png`}
