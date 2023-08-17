@@ -193,14 +193,16 @@ const RectangleGray = styled.div`
 
 const MainR = () => {
   const navigate = useNavigate();
+
+  const gotoPreMain = () => {
+    navigate("/");
+  };
+
   const gotoAnswer = () => {
     navigate("/Answer");
   };
   const gotoRespondMyPage = () => {
     navigate("/RespondMyPage");
-  };
-  const gotoPreMain = () => {
-    navigate("/");
   };
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
