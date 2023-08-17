@@ -28,11 +28,15 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 const MenuContainer = styled.div`
   position: relative;
-  margin-top: -60px;
-  margin-left: 490px;
+  margin-top: -41px;
+  margin-left: 461px;
 
   line-height: 1;
 `;
@@ -67,7 +71,7 @@ const MainContainer = styled.div`
   width: 1280px;
   height: 450px;
 
-  margin-top: 70px;
+  margin-top: 37px;
   padding-top: 20px;
 
   border-radius: 0px 150px 0px 0px;
@@ -81,21 +85,11 @@ const MainContainer = styled.div`
 
 const MainUser = () => {
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
-  const percentage = 2;
+  const answerListQ = JSON.parse(localStorage.getItem("AnswerListQ")) || [];
 
-  const navigate = useNavigate();
+  const progressBarIncrement = 2;
 
-  const GoMyPage = () => {
-    navigate("/RespondMyPage");
-  };
-
-  const GoAnswer = () => {
-    navigate("/Answer");
-  };
-
-  const GoLogout = () => {
-    navigate("/");
-  };
+  const percentage = Math.min(answerListQ.length * progressBarIncrement, 100);
 
   const progressBarStyles = {
     path: {
@@ -194,10 +188,12 @@ const MainListBox = styled.div`
 const List = ({ comment }) => {
   const navigate = useNavigate();
 
-  const GoRecord = (comment) => {
-    console.log("comment");
-    // navigate("/Record", { state: { comment } });
-    navigate(`/Record?comment=${encodeURIComponent(comment)}`);
+  const GoRecord = (commentId) => {
+    navigate(
+      `/Record?comment=${encodeURIComponent(
+        commentId
+      )}&img=${encodeURIComponent(comment.img)}`
+    );
   };
 
   const ListWhite = styled.div`
@@ -237,20 +233,21 @@ const List = ({ comment }) => {
 
   return (
     <ListWhite>
-      <ListContent>{comment}</ListContent>
-      <ListBtn
-        // onClick={GoRecord}
-        onClick={() => GoRecord(comment)}
-        src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
-      ></ListBtn>
+      <ListContent>{comment.content}</ListContent>
+      {comment.img && (
+        <ListBtn
+          onClick={() => GoRecord(comment.id)}
+          src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
+        />
+      )}
     </ListWhite>
   );
 };
 
 //버튼
 const MoreBtn = styled.button`
-  width: 170px;
-  height: 60px;
+  width: 180px;
+  height: 55px;
 
   margin-left: 750px;
   margin-top: -30px;
@@ -262,7 +259,7 @@ const MoreBtn = styled.button`
   color: #fff;
   text-align: center;
   font-family: Noto Sans KR;
-  font-size: 25px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 900;
   line-height: normal;
@@ -270,24 +267,52 @@ const MoreBtn = styled.button`
 
 const ResMy = () => {
   const navigate = useNavigate();
+  const [respondData, setRespondData] = useState([]);
 
-  const GoMyPage = () => {
-    navigate("/RespondMyPage");
-  };
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const authToken = localStorage.getItem("TokenR");
+        console.log(authToken);
 
-  const GoAnswer = () => {
-    navigate("/Answer");
-  };
+        const response = await axios.get("http://127.0.0.1:8000/my_answers/", {
+          headers: {
+            Authorization: `Token ${authToken}`, // 사용자 토큰을 헤더에 추가
+          },
+        });
+
+        console.log(response);
+
+        const RespondLength = response.data.responds.length;
+        localStorage.setItem("RespondLength", RespondLength);
+
+        const respondData = response.data.responds; // "respond" 필드를 직접 가져옴
+        setRespondData(respondData);
+      } catch (error) {
+        console.error("첫번째 오류 발생:", error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
 
   const GoLogout = () => {
     navigate("/");
   };
+  const GoMyPage = () => {
+    navigate("/RespondMyPage");
+  };
+  const GoAnswer = () => {
+    navigate("/Answer");
+  };
+  const GoMainR = () => {
+    navigate("/MainR");
+  };
 
-  const answerListQ = JSON.parse(localStorage.getItem("AnswerListQ")) || [];
+  const RespondLength = localStorage.getItem("RespondLength");
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={GoMainR}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"
@@ -303,14 +328,14 @@ const ResMy = () => {
       </MenuContainer>
       <MainContainer>
         <MainUser />
-        <MainTitle>답변을 기록합니다()</MainTitle>
+        <MainTitle>답변을 기록합니다 ({RespondLength})</MainTitle>
         <MainListBox>
-          {answerListQ.map((answer, index) => (
-            <List key={index} comment={answer} />
+          {respondData.map((comment) => (
+            <List key={comment.id} comment={comment} />
           ))}
         </MainListBox>
       </MainContainer>
-      <MoreBtn>답변 더하기</MoreBtn>
+      <MoreBtn onClick={GoAnswer}>답변 더하기</MoreBtn>
     </Container>
   );
 };

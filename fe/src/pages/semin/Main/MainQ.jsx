@@ -32,8 +32,8 @@ const MenuContainer = styled.div`
   height: 85px;
   padding-top: 40px;
 
-  margin-top: -87px;
-  margin-left: 480px;
+  margin-top: -86.5px;
+  margin-left: 461px;
   background: rgba(255, 255, 255, 0.78);
 
   line-height: 1;
@@ -44,7 +44,7 @@ const Menu = styled.div`
   position: relative;
   display: inline-block;
 
-  margin-left: 80px;
+  margin-left: 90px;
 
   color: #7e7c7c;
   text-align: center;

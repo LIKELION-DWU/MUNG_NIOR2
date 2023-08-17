@@ -6,16 +6,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-
+from .models import User
 from django.contrib.auth import authenticate, logout, login
 from .serializers import (
     StudentSignUpSerializer,
     TeacherSignUpSerializer,
     UserLoginSerializer,
 )
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 
 class StudentSignupView(APIView):
@@ -27,10 +24,14 @@ class StudentSignupView(APIView):
             user = serializer.save(user_type="student")
             user.set_password(user.phone_number)
             user.save()
+
+            token = Token.objects.create(user=user)
             return Response(
-                {"message": "Student 회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED
+                {"Token": token.key}
+                # {"message": "Student 회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def get(self, request):
         students = User.objects.filter(user_type="student")
@@ -47,8 +48,10 @@ class TeacherSignupView(APIView):
             user = serializer.save(user_type="teacher")
             user.set_password(user.phone_number)
             user.save()
+            token = Token.objects.create(user=user)
             return Response(
-                {"message": "Teacher 회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED
+                  {"Token": token.key}
+                # {"message": "Teacher 회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -74,10 +77,12 @@ class StudentLoginView(APIView):
             )
 
             if user is not None and user.user_type == "student":
+                token = Token.objects.get(user=user)
                 login(request, user)
                 return Response(
-                    {"message": "Student 로그인 되었습니다."},
-                    status=status.HTTP_200_OK,
+                    {"Token": token.key}
+                    # {"message": "Student 로그인 되었습니다."},
+                    # status=status.HTTP_200_OK,
                 )
 
         return Response(
@@ -111,10 +116,12 @@ class TeacherLoginView(APIView):
             )
 
             if user is not None and user.user_type == "teacher":
+                token = Token.objects.get(user=user)
                 login(request, user)
                 return Response(
-                    {"message": "Teacher 로그인 되었습니다."},
-                    status=status.HTTP_200_OK,
+                    {"Token": token.key}
+                    # {"message": "Teacher 로그인 되었습니다."},
+                    # status=status.HTTP_200_OK,
                 )
 
         return Response(
