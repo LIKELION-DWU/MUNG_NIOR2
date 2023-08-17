@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const Container = styled.div`
   position: relative;
@@ -147,6 +148,32 @@ const LookAnswer = () => {
   const navigate = useNavigate();
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const questionId = searchParams.get("question");
+  console.log(questionId);
+
+  useEffect(() => {
+    const fetchQuestionInfo = async () => {
+      const authToken = localStorage.getItem("TokenQ");
+
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/my_questions/`,
+          {
+            headers: {
+              Authorization: `Token ${authToken}`, // 사용자 토큰을 헤더에 추가
+            },
+          }
+        );
+        console.log(response.data.questions);
+      } catch (error) {
+        console.error("Error fetching question info:", error);
+      }
+    };
+    fetchQuestionInfo();
+  }, [questionId]);
+
   const GoAnswer = () => {
     navigate("/LookAnswer");
   };
@@ -159,11 +186,15 @@ const LookAnswer = () => {
   const GoQuestion = () => {
     navigate("/Question");
   };
+  const GoMainQ = () => {
+    navigate("/MainQ");
+  };
 
   return (
     <Container>
       <Logo>
         <img
+          onClick={GoMainQ}
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"
           width="150px"
@@ -184,6 +215,12 @@ const LookAnswer = () => {
           <UserName>{loggedInUserNameR}</UserName>
           <UserText>답변자</UserText>
         </User>
+
+        {/* {questionInfo ? (
+          <MainContent>{questionInfo.content}</MainContent>
+        ) : (
+          <p>Loading question info...</p>
+        )} */}
 
         <MainContent>
           오른쪽 그림처럼 길게 파인 곳넣으면 결제가 돼요!

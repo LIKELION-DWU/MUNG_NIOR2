@@ -9,14 +9,6 @@ User = get_user_model()
 class Question(models.Model):
     content = models.TextField()
     created_at = models.DateField(verbose_name="작성일", auto_now_add=True)
-    
-    # writer = models.ForeignKey(
-    #     User,
-    #     on_delete=models.CASCADE,
-    #     null=True,
-    #     limit_choices_to={"user_type": "student"},  # student 유저 타입만 접근 가능
-    #     default=None,
-    # )
 
     writer = models.ForeignKey(
         User,
@@ -24,6 +16,12 @@ class Question(models.Model):
         null=True,
         limit_choices_to={"user_type__exact": "student"},  # user_type이 "student"인 사용자만 접근 가능
     )
+    student_id = models.PositiveIntegerField(default=0, editable=False)
+
+    def save(self, *args, **kwargs):
+        if self.writer and self.writer.user_type == "student":
+            self.student_id = self.writer.student_id
+        super().save(*args, **kwargs)
 
 
     def __str__(self):

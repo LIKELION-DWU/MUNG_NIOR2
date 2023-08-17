@@ -32,7 +32,7 @@ const MenuContainer = styled.div`
   height: 85px;
   padding-top: 40px;
 
-  margin-top: -82px;
+  margin-top: -80.5px;
   margin-left: 461px;
   background: rgba(255, 255, 255, 0.78);
 

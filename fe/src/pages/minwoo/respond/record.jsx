@@ -1,7 +1,7 @@
 //세민합치기
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;
@@ -24,11 +24,15 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 const MenuContainer = styled.div`
   position: relative;
-  margin-top: -60px;
-  margin-left: 490px;
+  margin-top: -41px;
+  margin-left: 461px;
 
   line-height: 1;
 `;
@@ -61,6 +65,8 @@ const Menu = styled.div`
 //main
 const MainContainer = styled.div`
   position: relative;
+
+  overflow: auto;
 
   width: 1100px;
   height: 500px;
@@ -110,7 +116,6 @@ const MainContent = styled.div`
   position: absolute;
   top: 140px;
   left: 75px;
-  background: #00ff22;
 
   width: 500px;
   padding: 28px;
@@ -123,8 +128,7 @@ const MainContent = styled.div`
   font-weight: 800;
   line-height: normal;
 `;
-const MainImg = styled.div`
-  background: #00ff22;
+const MainImg = styled.img`
   position: absolute;
   right: 40px;
   top: 50px;
@@ -139,31 +143,40 @@ const MainImg = styled.div`
 const NextBtn = styled.img`
   position: absolute;
 
-  right: -110px;
-  bottom: -40px;
+  right: 0px;
+  bottom: 0px;
 
-  width: 28%;
+  width: 15%;
 `;
 
 const Record = () => {
   const navigate = useNavigate();
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const comment = searchParams.get("comment");
+  const img = searchParams.get("img");
+
+  console.log("comment:", comment);
+  console.log("comment:", img);
+
   const GoMy = () => {
     navigate("/RespondMyPage");
   };
-
   const GoAnswer = () => {
     navigate("/Answer");
   };
-
   const GoLogout = () => {
     navigate("/");
+  };
+  const GoMainR = () => {
+    navigate("/MainR");
   };
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={GoMainR}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"
@@ -185,15 +198,14 @@ const Record = () => {
           <UserText>답변자</UserText>
         </User>
 
-        <MainContent>
-          오른쪽 그림처럼 길게 파인 곳에 카드를 넣으면 결제가 돼요!
-        </MainContent>
-
-        <MainImg></MainImg>
+        <MainContent>{comment || "데이터없음"}</MainContent>
+        {img && <MainImg src={img} />}
       </MainContainer>
 
+      {/* 나의 기록으로 돌아가도 되냐고 물어보기 */}
       <NextBtn
-        src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
+        onClick={GoMy}
+        src={`${process.env.PUBLIC_URL}/images_minwoo/end.png`}
       ></NextBtn>
     </Container>
   );

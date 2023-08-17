@@ -22,6 +22,7 @@ import QuestionMyPage from "./pages/minwoo/question/myPage";
 import LookAnswer from "./pages/minwoo/question/lookAnswer";
 import Question from "./pages/minwoo/question/question";
 import Waiting from "./pages/minwoo/question/waiting";
+import WaitAnswer from "./pages/minwoo/question/waitAnswer";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="/LookAnswer" element={<LookAnswer />} />
           <Route path="/Question" element={<Question />} />
           <Route path="/Waiting" element={<Waiting />} />
+          <Route path="/WaitAnswer" element={<WaitAnswer />} />
         </Routes>
       </div>
     </BrowserRouter>

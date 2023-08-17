@@ -23,6 +23,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -140,6 +144,7 @@ const Nextbtn = styled.div`
 
 const JoinQ = () => {
   const navigate = useNavigate();
+
   const gotoJoinChoice = () => {
     navigate("/JoinChoice");
   };
@@ -148,6 +153,9 @@ const JoinQ = () => {
   };
   const gotoJoinComplete = () => {
     navigate("/JoinComplete");
+  };
+  const gotoPreMain = () => {
+    navigate("/");
   };
 
   const handleNextBtnClick = async () => {
@@ -163,8 +171,18 @@ const JoinQ = () => {
             phoneNumber: phoneQ,
           }
         );
-        if (response.status === 201) {
+        if (response.status === 200) {
+          // 응답 데이터를 변수에 저장
+          const reponseId = await axios.get(
+            "http://127.0.0.1:8000/signup/student/"
+          );
+          const length = reponseId.data.length;
+          const id = reponseId.data[length - 1].studentId;
+
+          localStorage.setItem("loggedInUserIdQ", id);
+
           alert("회원가입이 완료되었습니다.");
+
           gotoJoinComplete();
         } else {
           alert("회원가입에 실패했습니다. 다시 시도해주세요.");
@@ -187,7 +205,7 @@ const JoinQ = () => {
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={gotoPreMain}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"

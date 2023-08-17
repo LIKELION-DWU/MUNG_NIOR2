@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -27,11 +28,15 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 const MenuContainer = styled.div`
   position: relative;
-  margin-top: -60px;
-  margin-left: 490px;
+  margin-top: -41px;
+  margin-left: 461px;
 
   line-height: 1;
 `;
@@ -66,27 +71,32 @@ const MainContainer = styled.div`
   width: 1280px;
   height: 450px;
 
-  margin-top: 70px;
+  margin-top: 37px;
   padding-top: 20px;
 
   border-radius: 0px 150px 0px 0px;
+
   background: linear-gradient(
     180deg,
-    rgba(176, 173, 173, 0.2) 0%,
+    rgba(255, 109, 46, 0.2) 0%,
     rgba(0, 0, 0, 0) 100%
   );
 `;
 
 const MainUser = () => {
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
-  const percentage = 2;
+  const answerListQ = JSON.parse(localStorage.getItem("AnswerListQ")) || [];
+
+  const progressBarIncrement = 2;
+
+  const percentage = Math.min(answerListQ.length * progressBarIncrement, 100);
 
   const progressBarStyles = {
     path: {
       stroke: `#FF6D2E`, // 프로그래스 바 채우는 부분의 색상
     },
     trail: {
-      stroke: "#D9D9D9", // 프로그래스 바의 빈 부분의 색상
+      stroke: "#FFF", // 프로그래스 바의 빈 부분의 색상
     },
     background: {
       fill: "#fff", // 배경색
@@ -175,22 +185,15 @@ const MainListBox = styled.div`
   padding-top: 20px;
 `;
 
-const fetchAnswers = async () => {
-  try {
-    const response = await axios.get("http://127.0.0.1:8000/my_answers/");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching answers:", error);
-    return [];
-  }
-};
-
-const List = ({ answerContent }) => {
+const List = ({ comment }) => {
   const navigate = useNavigate();
 
-  const GoRecord = () => {
-    console.log("go");
-    navigate("/Record");
+  const GoRecord = (commentId) => {
+    navigate(
+      `/Record?comment=${encodeURIComponent(
+        commentId
+      )}&img=${encodeURIComponent(comment.img)}`
+    );
   };
 
   const ListWhite = styled.div`
@@ -230,19 +233,21 @@ const List = ({ answerContent }) => {
 
   return (
     <ListWhite>
-      <ListContent>{answerContent}</ListContent>
-      <ListBtn
-        onClick={GoRecord}
-        src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
-      ></ListBtn>
+      <ListContent>{comment.content}</ListContent>
+      {comment.img && (
+        <ListBtn
+          onClick={() => GoRecord(comment.id)}
+          src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
+        />
+      )}
     </ListWhite>
   );
 };
 
 //버튼
 const MoreBtn = styled.button`
-  width: 170px;
-  height: 60px;
+  width: 180px;
+  height: 55px;
 
   margin-left: 750px;
   margin-top: -30px;
@@ -254,7 +259,7 @@ const MoreBtn = styled.button`
   color: #fff;
   text-align: center;
   font-family: Noto Sans KR;
-  font-size: 25px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 900;
   line-height: normal;
@@ -262,35 +267,52 @@ const MoreBtn = styled.button`
 
 const ResMy = () => {
   const navigate = useNavigate();
-  const [answers, setAnswers] = useState([]);
+  const [respondData, setRespondData] = useState([]);
 
   useEffect(() => {
-    async function fetchAnswers() {
+    const fetchUserInfo = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/my_answers/");
-        setAnswers(response.data);
+        const authToken = localStorage.getItem("TokenR");
+        console.log(authToken);
+
+        const response = await axios.get("http://127.0.0.1:8000/my_answers/", {
+          headers: {
+            Authorization: `Token ${authToken}`, // 사용자 토큰을 헤더에 추가
+          },
+        });
+
+        console.log(response);
+
+        const RespondLength = response.data.responds.length;
+        localStorage.setItem("RespondLength", RespondLength);
+
+        const respondData = response.data.responds; // "respond" 필드를 직접 가져옴
+        setRespondData(respondData);
       } catch (error) {
-        console.error("Error fetching answers:", error);
+        console.error("첫번째 오류 발생:", error);
       }
-    }
-    fetchAnswers();
+    };
+    fetchUserInfo();
   }, []);
-
-  const GoMyPage = () => {
-    navigate("/RespondMyPage");
-  };
-
-  const GoAnswer = () => {
-    navigate("/Answer");
-  };
 
   const GoLogout = () => {
     navigate("/");
   };
+  const GoMyPage = () => {
+    navigate("/RespondMyPage");
+  };
+  const GoAnswer = () => {
+    navigate("/Answer");
+  };
+  const GoMainR = () => {
+    navigate("/MainR");
+  };
+
+  const RespondLength = localStorage.getItem("RespondLength");
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={GoMainR}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"
@@ -306,14 +328,14 @@ const ResMy = () => {
       </MenuContainer>
       <MainContainer>
         <MainUser />
-        <MainTitle>답변을 기록합니다()</MainTitle>
+        <MainTitle>답변을 기록합니다 ({RespondLength})</MainTitle>
         <MainListBox>
-          {answers.map((answer) => (
-            <List key={answer.id} answerContent={answer.comment} />
+          {respondData.map((comment) => (
+            <List key={comment.id} comment={comment} />
           ))}
         </MainListBox>
       </MainContainer>
-      <MoreBtn>답변 더하기</MoreBtn>
+      <MoreBtn onClick={GoAnswer}>답변 더하기</MoreBtn>
     </Container>
   );
 };

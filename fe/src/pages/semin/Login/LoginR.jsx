@@ -23,6 +23,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -135,6 +139,7 @@ const Loginbtn = styled.div`
 
 const LoginR = () => {
   const navigate = useNavigate();
+
   const gotoJoinChoice = () => {
     navigate("/JoinChoice");
   };
@@ -143,6 +148,9 @@ const LoginR = () => {
   };
   const gotoLoginQ = () => {
     navigate("/LoginQ");
+  };
+  const gotoPreMain = () => {
+    navigate("/");
   };
 
   const handleLoginBtnClick = async () => {
@@ -160,6 +168,8 @@ const LoginR = () => {
         );
 
         if (response.status === 200) {
+          localStorage.setItem("TokenR", response.data.Token);
+
           alert("로그인에 성공했습니다.");
           localStorage.setItem("loggedInUserNameR", nameR);
           gotoMainR();
@@ -188,7 +198,7 @@ const LoginR = () => {
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={gotoPreMain}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"
