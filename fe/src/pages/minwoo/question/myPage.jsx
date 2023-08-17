@@ -198,9 +198,11 @@ const List = ({ question }) => {
     navigate(`/LookAnswer?question=${encodeURIComponent(questionId)}`);
   };
 
-  const GoWaitAnswer = () => {
+  {
+    /*const GoWaitAnswer = () => {
     navigate("/WaitAnswer");
-  };
+  }*/
+  }
 
   const ListWhite = styled.div`
     position: relative;
@@ -243,8 +245,7 @@ const List = ({ question }) => {
     <ListWhite>
       <ListContent>{question.content}</ListContent>
       <ListBtn
-        // onClick={() => GoRecord(question.id)}
-        onClick={GoWaitAnswer}
+        onClick={() => GoRecord(question.id)}
         src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
       ></ListBtn>
     </ListWhite>

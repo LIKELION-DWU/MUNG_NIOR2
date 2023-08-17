@@ -48,7 +48,7 @@ class MyQuestionSerializer(serializers.ModelSerializer):
 class MyAnswerSerializer(serializers.ModelSerializer):
     writer = serializers.ReadOnlyField(source="writer.username")
     teacher_id = serializers.ReadOnlyField(source="writer.teacher_id")
-    answers = AnswerSerializer(source="answer_set", many=True, read_only=True)
+    answers = AnswerSerializer(many=True, read_only=True)
 
     class Meta:
         model = User

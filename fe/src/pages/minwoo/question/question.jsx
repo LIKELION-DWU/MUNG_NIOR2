@@ -33,6 +33,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 //background: rgba(255, 255, 255, 0.78);
 const MenuContainer = styled.div`
@@ -314,10 +318,13 @@ const Question = () => {
   const GoMyPage = () => {
     navigate("/QuestionMyPage");
   };
+  const GoMainQ = () => {
+    navigate("/MainQ");
+  };
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={GoMainQ}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"

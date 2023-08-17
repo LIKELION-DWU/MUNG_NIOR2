@@ -34,6 +34,7 @@ const MenuContainer = styled.div`
 
   margin-top: -80.5px;
   margin-left: 461px;
+
   background: rgba(255, 255, 255, 0.78);
 
   line-height: 1;

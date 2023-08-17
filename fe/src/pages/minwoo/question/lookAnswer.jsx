@@ -21,6 +21,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -107,9 +111,8 @@ const UserText = styled.p`
 
 const MainContent = styled.div`
   position: absolute;
-  top: 140px;
-  left: 75px;
-  background: #00ff22;
+  top: 170px;
+  left: 280px;
 
   width: 500px;
   padding: 28px;
@@ -122,17 +125,6 @@ const MainContent = styled.div`
   font-weight: 800;
   line-height: normal;
 `;
-const MainImg = styled.div`
-  background: #00ff22;
-  position: absolute;
-  right: 40px;
-  top: 50px;
-
-  height: 380px;
-  width: 380px;
-
-  border-radius: 30px;
-`;
 
 //btn
 const NextBtn = styled.img`
@@ -141,17 +133,20 @@ const NextBtn = styled.img`
   right: -110px;
   bottom: -40px;
 
-  width: 28%;
+  width: 24%;
 `;
 
 const LookAnswer = () => {
   const navigate = useNavigate();
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
+  const [answerContent, setAnswerContent] = useState(""); // 답변 내용 상태 변수 추가
+  const [currentAnswerIndex, setCurrentAnswerIndex] = useState(0); // 현재 보여지고 있는 답변의 인덱스 상태 추가
+  const [answers, setAnswers] = useState([]);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
+
   const questionId = searchParams.get("question");
-  console.log(questionId);
 
   useEffect(() => {
     const fetchQuestionInfo = async () => {
@@ -162,17 +157,45 @@ const LookAnswer = () => {
           `http://127.0.0.1:8000/my_questions/`,
           {
             headers: {
-              Authorization: `Token ${authToken}`, // 사용자 토큰을 헤더에 추가
+              Authorization: `Token ${authToken}`,
             },
           }
         );
-        console.log(response.data.questions);
+
+        console.log(response.data); // 응답 데이터 확인
+
+        const fetchedQuestions = response.data.questions;
+        const questionIndex = fetchedQuestions.findIndex(
+          (question) => question.id.toString() === questionId
+        );
+
+        if (questionIndex !== -1) {
+          const fetchedAnswers = fetchedQuestions[questionIndex].answers;
+          setAnswers(fetchedAnswers);
+
+          if (fetchedAnswers && fetchedAnswers.length > 0) {
+            setCurrentAnswerIndex(0);
+            setAnswerContent(fetchedAnswers[0].comment);
+          }
+        }
       } catch (error) {
         console.error("Error fetching question info:", error);
       }
     };
     fetchQuestionInfo();
   }, [questionId]);
+
+  const GoNextAnswer = () => {
+    const nextIndex = currentAnswerIndex + 1;
+
+    if (nextIndex >= answers.length) {
+      // 마지막 답변일 때 마이페이지로 이동
+      navigate("/QuestionMyPage");
+    } else {
+      setCurrentAnswerIndex(nextIndex);
+      setAnswerContent(answers[nextIndex].comment);
+    }
+  };
 
   const GoAnswer = () => {
     navigate("/LookAnswer");
@@ -216,21 +239,12 @@ const LookAnswer = () => {
           <UserText>답변자</UserText>
         </User>
 
-        {/* {questionInfo ? (
-          <MainContent>{questionInfo.content}</MainContent>
-        ) : (
-          <p>Loading question info...</p>
-        )} */}
-
-        <MainContent>
-          오른쪽 그림처럼 길게 파인 곳넣으면 결제가 돼요!
-        </MainContent>
-
-        <MainImg></MainImg>
+        <MainContent>{answerContent}</MainContent>
       </MainContainer>
 
       <NextBtn
         src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
+        onClick={GoNextAnswer}
       ></NextBtn>
     </Container>
   );
