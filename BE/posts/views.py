@@ -99,12 +99,32 @@ class UserQuestionListView(APIView):
 
         return Response(user_data)
 
-class UserAnswerListView(ListAPIView):
-    serializer_class = MyAnswerSerializer
-    permission_classes = [AllowAny]
+# class UserAnswerListView(ListAPIView):
+#     serializer_class = MyAnswerSerializer
+#     permission_classes = [AllowAny]
 
-    def get_queryset(self):
-        teacher_id = self.request.user.teacher_id  # 선생님의 teacher_id 가져오기
-        return User.objects.filter(id=teacher_id)
+#     def get_queryset(self):
+#         teacher_id = self.request.user.teacher_id  # 선생님의 teacher_id 가져오기
+#         return User.objects.filter(id=teacher_id)
 
+class UserAnswerListView(APIView):
+    # permission_classes = [AllowAny]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+
+        # Get answers related to the user
+        answers = Answer.objects.filter(writer=user)
+
+        answer_data = AnswerSerializer(answers, many=True).data
+
+        user_data = {
+            "teacher_id": user.teacher_id,
+            "writer": user.username,
+            "answers": answer_data
+        }
+
+        return Response(user_data)
 

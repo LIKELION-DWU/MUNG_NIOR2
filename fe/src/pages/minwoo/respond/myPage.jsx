@@ -85,11 +85,11 @@ const MainContainer = styled.div`
 
 const MainUser = () => {
   const loggedInUserNameR = localStorage.getItem("loggedInUserNameR");
-  const answerListQ = JSON.parse(localStorage.getItem("AnswerListQ")) || [];
+  const RespondLength = JSON.parse(localStorage.getItem("RespondLength")) || 0;
 
   const progressBarIncrement = 2;
 
-  const percentage = Math.min(answerListQ.length * progressBarIncrement, 100);
+  const percentage = Math.min(RespondLength * progressBarIncrement, 100);
 
   const progressBarStyles = {
     path: {
@@ -211,7 +211,8 @@ const List = ({ comment }) => {
   `;
   const ListContent = styled.div`
     width: 540px; /* 원하는 가로 길이로 설정 */
-    white-space: nowrap; /* 한 줄로 글이 표시되도록 설정 */
+    height: 70px;
+    white-space: no-wrap; /* 한 줄로 글이 표시되도록 설정 */
     overflow: hidden; /* 넘치는 부분을 감춤 */
     text-overflow: ellipsis; /* 넘치는 부분을 생략 부호로 표시 */
 
@@ -233,13 +234,11 @@ const List = ({ comment }) => {
 
   return (
     <ListWhite>
-      <ListContent>{comment.content}</ListContent>
-      {comment.img && (
-        <ListBtn
-          onClick={() => GoRecord(comment.id)}
-          src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
-        />
-      )}
+      <ListContent>{comment.comment}</ListContent>
+      {/*<ListBtn
+        //onClick={() => GoRecord(comment.id)}
+        src={`${process.env.PUBLIC_URL}/images_minwoo/next.png`}
+      />*/}
     </ListWhite>
   );
 };
@@ -283,10 +282,10 @@ const ResMy = () => {
 
         console.log(response);
 
-        const RespondLength = response.data.responds.length;
+        const RespondLength = response.data.answers.length;
         localStorage.setItem("RespondLength", RespondLength);
 
-        const respondData = response.data.responds; // "respond" 필드를 직접 가져옴
+        const respondData = response.data.answers; // "answers" 필드를 직접 가져옴
         setRespondData(respondData);
       } catch (error) {
         console.error("첫번째 오류 발생:", error);
@@ -330,9 +329,13 @@ const ResMy = () => {
         <MainUser />
         <MainTitle>답변을 기록합니다 ({RespondLength})</MainTitle>
         <MainListBox>
-          {respondData.map((comment) => (
-            <List key={comment.id} comment={comment} />
-          ))}
+          {respondData.length > 0 ? (
+            respondData.map((comment) => (
+              <List key={comment.id} comment={comment} />
+            ))
+          ) : (
+            <p>No responds available.</p>
+          )}
         </MainListBox>
       </MainContainer>
       <MoreBtn onClick={GoAnswer}>답변 더하기</MoreBtn>

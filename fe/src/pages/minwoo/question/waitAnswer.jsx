@@ -24,6 +24,10 @@ const Logo = styled.div`
   margin-top: 60px;
   margin-left: 60px;
   z-index: 999;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 const MenuContainer = styled.div`
   position: fixed;
@@ -120,10 +124,13 @@ const WaitAnswer = () => {
   const GoQuestion = () => {
     navigate("/Question");
   };
+  const GoMainQ = () => {
+    navigate("/MainQ");
+  };
 
   return (
     <Container>
-      <Logo>
+      <Logo onClick={GoMainQ}>
         <img
           src={`${process.env.PUBLIC_URL}/images_semin/logo.png`}
           alt="logo"

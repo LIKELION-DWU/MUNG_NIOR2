@@ -1,5 +1,7 @@
 from rest_framework.routers import SimpleRouter
 from django.urls import path, include
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 from .views import QuestionViewSet, AnswerViewSet
 from rest_framework.routers import DefaultRouter
 
@@ -20,6 +22,6 @@ answer_router.register(
 urlpatterns = [
     path("", include(questions_router.urls)),
     path("questions/<int:question_id>/", include(answer_router.urls)),
-    path('my_questions/', UserQuestionListView.as_view(), name='my-questions'),
+    path('my_questions/', UserQuestionListView.as_view(), name='my-questions'),    
     path("my_answers/", UserAnswerListView.as_view(), name="my-answers"),
 ]

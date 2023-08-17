@@ -68,7 +68,7 @@ const Choice = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 50px;
+  top: 70px;
 
   :hover {
     cursor: pointer;
